@@ -1,16 +1,13 @@
-// Indices utilizados:
-// (0) - para sucesso  (-1) - para lugar já ocupado (-2) - posicao invalida para essa arma. (-5) - limite de arma ja atingido.
+import java.util.Scanner;
 
 public class Jogador {
     private String meuJogo, jogoDoAdversario;
     private char[][] tabuleiro = new char[8][8];
-    private int subInseridos, cruInseridos, porInseridos;
+    private int subInseridos = 0, cruInseridos = 0, porInseridos = 0;
+    Scanner scanner = new Scanner(System.in);
 
     public Jogador(String meuJogo) {
         this.meuJogo = meuJogo;
-        this.subInseridos = 0;
-        this.cruInseridos = 0;
-        this.porInseridos = 0;
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -19,13 +16,34 @@ public class Jogador {
         }
     }
 
+    public int getSubInseridos(){
+        return subInseridos;
+    }
+    public void incrementaSub(int valor){
+        this.subInseridos = valor;
+    }
+
+    public int getCruInseridos(){
+        return cruInseridos;
+    }
+    public void incrementaCru(int valor){
+        this.cruInseridos = valor;
+    }
+
+    public int getPorInseridos(){
+        return porInseridos;
+    }
+    public void incrementaPor(int valor){
+        this.porInseridos = valor;
+    }
+
     public String getNome() {
         return meuJogo;
     }
 
     public void atirar(Jogador jogoDoAdversario, int[] posicao) {
         String resultado = jogoDoAdversario.verificarSeAcertou(posicao);
-        System.out.println(meuJogo + " atirou em: " + posicao[0] + "," + posicao[1]);
+        System.out.println(getNome() + " atirou em: " + posicao[0] + "," + posicao[1]);
         System.out.println("Resultado do tiro: " + resultado);
     }
 
@@ -43,8 +61,8 @@ public class Jogador {
         return resultado;
     }
 
-    public void imprimirTabuleiro(String nome) {
-        System.out.println("Tabuleiro do Jogador " + meuJogo + ":");
+    public void imprimirTabuleiro() {
+        System.out.println("Tabuleiro do Jogador " + this.meuJogo + ":");
         System.out.print("  ");
         for (int i = 0; i <= 7; i++) {
             System.out.print(i + " ");
@@ -60,42 +78,45 @@ public class Jogador {
         }
     }
 
-    public int inserirSubmarino(int[] posicao){
-        if(this.subInseridos <3){
+    public String inserirSubmarino(int[] posicao){
+        if(getSubInseridos() < 3){
             if(this.tabuleiro[posicao[0]][posicao[1]] == 'o'){
                 this.tabuleiro[posicao[0]][posicao[1]] = 's';
-                this.subInseridos ++;
-                return 0; // Sucesso
+                incrementaSub(+1);
+                System.out.println("Arma alocada com sucesso!");
+                imprimirTabuleiro();
             } else{
                 System.out.println("Já existe uma arma nesta posição");
-                return -1; // Já existe arma no local
             }
         } else{
-            return -5; // Para limite de arma atingido.
+            System.out.println("Limite de armas atingido!");
         }
+        return "";
     }
 
-    public int inserirCruzador(int[] posicao){
-        if(this.cruInseridos < 2){
+    public String inserirCruzador(int[] posicao){
+        if(getCruInseridos() < 2){
             if(posicao[1] != 7){
                 if(this.tabuleiro[posicao[0]][posicao[1]] == 'o' & this.tabuleiro[posicao[0]][posicao[1]+1] == 'o'){
                     this.tabuleiro[posicao[0]][posicao[1]] = 'c';
                     this.tabuleiro[posicao[0]][posicao[1]+1] = 'c';
-                    this.cruInseridos ++;
-                    return 0; // Sucesso
+                    incrementaCru(+1);
+                    System.out.println("Arma alocada com sucesso!");
+                    imprimirTabuleiro();
                 } else{
-                    return -1; // Já existe arma no local
+                    System.out.println("Já existe uma arma no local!");
                 }
             } else {
-                return -2; // Posicao invalida para cruzador
+                System.out.println("Posiçao inválida! Não há espaço!");
             }
         } else{
-            return -5; // Para limite de arma atingido.
+            System.out.println("Limite de armas atingido!");
         }
+        return "";
     }
 
-    public int inserirPortaAviao(int[] posicao){
-        if(this.porInseridos < 1){
+    public String inserirPortaAviao(int[] posicao){
+        if(getPorInseridos() < 1){
             if (posicao[1] < 4) {
                 if (this.tabuleiro[posicao[0]][posicao[1]] == 'o' &
                         this.tabuleiro[posicao[0]][posicao[1]+1] == 'o' &
@@ -107,39 +128,42 @@ public class Jogador {
                     this.tabuleiro[posicao[0]][posicao[1] + 2] = 'p';
                     this.tabuleiro[posicao[0]][posicao[1] + 3] = 'p';
                     this.tabuleiro[posicao[0]][posicao[1] + 4] = 'p';
-                    this.porInseridos ++;
-                    return 0; // Sucesso
+                    incrementaCru(+1);
+                    System.out.println("Arma alocada com sucesso!");
+                    imprimirTabuleiro();
                 } else {
-                    return -1; // Já existe arma no local
+                    System.out.println("Já existe uma arma no local!");
                 }
             } else {
-                return -2; // Posicao invalida para cruzador
+                System.out.println("Posiçao inválida! Não há espaço!");
             }
         } else{
-            return -5; // Para limite de arma atingido.
+            System.out.println("Limite de armas atingido!");
         }
-    }
-
-    public String verificaAcao(int resultado){
-        return switch (resultado) {
-            case 0 -> "Arma alocada com sucesso!";
-            case -1 -> "Já existe uma arma no local!";
-            case -2 -> "Posiçao inválida! Não há espaço!";
-            case -5 -> "Limite de armas atingido!";
-            default -> "erro! tente novamente.";
-        };
-    }
-
-    /*
-    public String menuArmas(){
-        System.out.println("Escolha qual arma deseja inserir: ");
-        System.out.println("[1] - Submarinos");
-        System.out.println("[2] - Cruzadores");
-        System.out.println("[3] - Porta-avioes");
         return "";
     }
 
-     */
+
+    public void menuInserirArma(Jogador player, int arma){
+        System.out.println("Escolha a linha inicial que deseja por a arma e logo após a coluna.");
+        int linha = scanner.nextInt();
+        int coluna = scanner.nextInt();
+        int[] escolhaPosicao = new int[]{linha, coluna};
+        switch (arma){
+            case 1:
+                player.inserirSubmarino(escolhaPosicao);
+                break;
+
+            case 2:
+                player.inserirCruzador(escolhaPosicao);
+                break;
+
+            case 3:
+                player.inserirPortaAviao(escolhaPosicao);
+                break;
+        }
+    }
+
 }
 
 /*
